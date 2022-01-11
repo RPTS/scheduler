@@ -1,5 +1,7 @@
   import React, { useState, useEffect } from 'react';
-  import { hasConflict, addScheduleTimes } from '../utilities/times.js';
+  import { hasConflict, addScheduleTimes, timeParts} from '../utilities/times.js';
+  import { setData } from '../utilities/firebase.js';
+
   
   const terms = { F: 'Fall', W: 'Winter', S: 'Spring'};
   const days = ['M', 'Tu', 'W', 'Th', 'F'];
@@ -34,6 +36,24 @@
     course.id.slice(1, 4)
   );
 
+  const reschedule = async (course, meets) => {
+    if (meets && window.confirm(`Change ${course.id} to ${meets}?`)) {
+      try {
+        await setData(`/courses/${course.id}/meets`, meets);
+      } catch (error) {
+        alert(error);
+      }
+    }
+  };
+
+  const getCourseMeetingData = course => {
+    const meets = prompt('Enter meeting data: MTuWThF hh:mm-hh:mm', course.meets);
+    const valid = !meets || timeParts(meets).days;
+    if (valid) return meets;
+    alert('Invalid meeting data');
+    return null;
+  };
+
   // make a bootstrap card
   const Course = ({ course, selected, setSelected }) => {
     const isSelected = selected.includes(course);
@@ -44,7 +64,8 @@
     return (
       <div className="card m-1 p-2" 
         style={style}
-        onClick={isDisabled ? null : () =>  setSelected(toggle(course, selected))}>
+        onClick={isDisabled ? null : () =>  setSelected(toggle(course, selected))}
+        onDoubleClick={() => reschedule(course, getCourseMeetingData(course))}>
         <div className="card-body">
           <div className="card-title">{ getCourseTerm(course) } CS { getCourseNumber(course) }</div>
           <div className="card-text">{ course.title }</div>
@@ -53,6 +74,9 @@
     );
   };
 
+  
+
+  
   // select a course: new list of selected courses that includes the course
   // unselect a course: create a new list of selected courses that omits the course
   const toggle = (x, lst) => (
