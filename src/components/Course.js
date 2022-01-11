@@ -21,6 +21,7 @@
         <div className="card-body">
           <div className="card-title">{ getCourseTerm(course) } CS { getCourseNumber(course) }</div>
           <div className="card-text">{ course.title }</div>
+          <div className="card-text">{ course.meets }</div>
         </div>
       </div>
     );
