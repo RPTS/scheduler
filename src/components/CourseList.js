@@ -1,6 +1,6 @@
   import React, { useState, useEffect } from 'react';
   import { hasConflict, addScheduleTimes, timeParts} from '../utilities/times.js';
-  import { setData } from '../utilities/firebase.js';
+  import { setData, signInWithGoogle, signOut, useUserState} from '../utilities/firebase.js';
 
   
   const terms = { F: 'Fall', W: 'Winter', S: 'Spring'};
@@ -54,10 +54,11 @@
     return null;
   };
 
-  // make a bootstrap card
+  // // make a bootstrap card
   const Course = ({ course, selected, setSelected }) => {
     const isSelected = selected.includes(course);
     const isDisabled = !isSelected && hasConflict(course, selected);
+    const [user] = useUserState();
     const style = {
       backgroundColor: isDisabled? 'lightgrey' : isSelected ? 'lightgreen' : 'white'
     };
@@ -65,7 +66,7 @@
       <div className="card m-1 p-2" 
         style={style}
         onClick={isDisabled ? null : () =>  setSelected(toggle(course, selected))}
-        onDoubleClick={() => reschedule(course, getCourseMeetingData(course))}>
+        onDoubleClick={!user ? null :() => reschedule(course, getCourseMeetingData(course))}>
         <div className="card-body">
           <div className="card-title">{ getCourseTerm(course) } CS { getCourseNumber(course) }</div>
           <div className="card-text">{ course.title }</div>
@@ -73,7 +74,6 @@
       </div>
     );
   };
-
   
 
   
@@ -93,15 +93,36 @@
     </>
   );
   
-  // btn-group can be used to make a row of bottons
-  const TermSelector = ({term,setTerm}) => (
-    <div className="btn-group">
-    { 
-      Object.values(terms).map(value => (
-        <TermButton key={value} term={value} setTerm={setTerm} checked={value === term} />
-      ))
-    }
-    </div>
+
+  const SignInButton = () => (
+    <button className="btn btn-secondary btn-sm"
+        onClick={() => signInWithGoogle()}>
+      Sign In
+    </button>
   );
-  
+
+  const SignOutButton = () => (
+    <button className="btn btn-secondary btn-sm"
+        onClick={() => signOut()}>
+      Sign Out
+    </button>
+  );
+
+  // btn-group can be used to make a row of bottons
+  const TermSelector = ({term, setTerm}) => {
+    const [user] = useUserState();
+    return (
+    <div className="btn-toolbar justify-content-between">
+      <div className="btn-group">
+      { 
+        Object.values(terms).map(
+          value => <TermButton key={value} term={value} setTerm={setTerm} checked={value === term} />
+        )
+      }
+      </div>
+      { user ? <SignOutButton /> : <SignInButton /> }
+    </div>
+    );
+  }
+    
   export default CourseList;
