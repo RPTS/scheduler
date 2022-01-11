@@ -45,56 +45,56 @@ const terms = { F: 'Fall', W: 'Winter', S: 'Spring'};
 
 const days = ['M', 'Tu', 'W', 'Th', 'F'];
 
-const App = () => {
-  const [schedule, loading, error] = useData('/', addScheduleTimes); 
+// const App = () => {
+//   const [schedule, loading, error] = useData('/', addScheduleTimes); 
   
-  if (error) return <h1>{error}</h1>;
-  if (loading) return <h1>Loading the schedule...</h1>
-
-  return (
-    <div className="container">
-      <Banner title={ schedule.title } />
-      <CourseList courses={ schedule.courses } />
-    </div>
-  );
-};
-
-
-
-// // <Banner title={ schedule.title } /> 
-// // collects the attributes into a props objects, and passes that object to the function
-// // so React calls function Banner with object {"title": "CS Courses..."}
-// const App = () =>  {
-
-//   // we used array destructuring to assign the array value to schedule, setSchedule
-//   // if useState() no initial value, state variable begin as undefined
-//   // use !schedule to check for that before we load the schedule for the first time
-//   const [schedule, setSchedule] = useState();
-//   const url = 'https://courses.cs.northwestern.edu/394/data/cs-courses.php';
-
-//   // get the schedule JSON data and store it using the setSchedule() function
-//   // useEffect: run function only on updates where specific state variables have changed
-//   // pass an array of those variables as the second argument
-//   // React runs the function only when the component is first added
-//   useEffect(() => {
-//     const fetchSchedule = async () => {
-//       const response = await fetch(url);
-//       if (!response.ok) throw response;
-//       const json = await response.json();
-//       setSchedule(addScheduleTimes(json));
-//     }
-//     fetchSchedule();
-//   }, []);
-
-
-//   if (!schedule) return <h1>Loading schedule...</h1>;
+//   if (error) return <h1>{error}</h1>;
+//   if (loading) return <h1>Loading the schedule...</h1>
 
 //   return (
 //     <div className="container">
-//       <Banner title={ schedule.title } /> 
+//       <Banner title={ schedule.title } />
 //       <CourseList courses={ schedule.courses } />
 //     </div>
 //   );
 // };
+
+
+
+// <Banner title={ schedule.title } /> 
+// collects the attributes into a props objects, and passes that object to the function
+// so React calls function Banner with object {"title": "CS Courses..."}
+const App = () =>  {
+
+  // we used array destructuring to assign the array value to schedule, setSchedule
+  // if useState() no initial value, state variable begin as undefined
+  // use !schedule to check for that before we load the schedule for the first time
+  const [schedule, setSchedule] = useState();
+  const url = 'https://courses.cs.northwestern.edu/394/data/cs-courses.php';
+
+  // get the schedule JSON data and store it using the setSchedule() function
+  // useEffect: run function only on updates where specific state variables have changed
+  // pass an array of those variables as the second argument
+  // React runs the function only when the component is first added
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      const response = await fetch(url);
+      if (!response.ok) throw response;
+      const json = await response.json();
+      setSchedule(addScheduleTimes(json));
+    }
+    fetchSchedule();
+  }, []);
+
+
+  if (!schedule) return <h1>Loading schedule...</h1>;
+
+  return (
+    <div className="container">
+      <Banner title={ schedule.title } /> 
+      <CourseList courses={ schedule.courses } />
+    </div>
+  );
+};
 
 export default App;
